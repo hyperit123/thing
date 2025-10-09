@@ -41,10 +41,10 @@ editOverlay.addEventListener('click', (e) => {
 });
 
 // Profile picture functionality
-pfpInput.addEventListener('change', function() {
+pfpInput.addEventListener('change', function () {
     if (this.files && this.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             document.getElementById('editPfp').src = e.target.result;
         };
         reader.readAsDataURL(this.files[0]);
@@ -62,7 +62,7 @@ function loadCurrentValues() {
     stats.forEach(stat => {
         const container = document.getElementById(stat);
         const displayBase = parseInt(container.querySelector('input:nth-child(1)').value) || 1;
-        const displayBonus = parseInt(container.querySelector('input:nth-child(3)').value) || 0; 
+        const displayBonus = parseInt(container.querySelector('input:nth-child(3)').value) || 0;
         document.getElementById(`edit-${stat}-base`).value = Math.max(1, displayBase);
         document.getElementById(`edit-${stat}-bonus`).value = displayBonus || '';
     });
@@ -71,6 +71,7 @@ function loadCurrentValues() {
     document.getElementById('editWoundsMod').value = document.getElementById('Modcb').value;
     document.getElementById('editStaminaName').value = document.querySelector('#cb-body .cb-grupe:nth-child(2) #cb-name').value;
     document.getElementById('editStaminaMod').value = document.getElementById('Modcb1').value;
+    document.getElementById('editCustomMove').value = localStorage.getItem('customMoveSpeed') || '';
 }
 
 let pointsUsed = 0;
@@ -108,7 +109,7 @@ function updatePointsRemaining() {
 
 document.getElementById('editLevelDropdown').addEventListener('change', updatePointsRemaining);
 document.querySelectorAll('.point-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
         const stat = this.dataset.stat;
         const action = this.dataset.action;
         const input = document.getElementById(`edit-${stat}-base`);
@@ -130,8 +131,16 @@ document.querySelectorAll('[id$="-bonus"]').forEach(input => {
     input.addEventListener('input', updatePointsRemaining);
 });
 document.getElementById('editRaceSize').addEventListener('change', () => {
-     updatePointsRemaining();
-     updateStats();
+    updatePointsRemaining();
+    updateStats();
+});
+document.getElementById('editCustomMove').addEventListener('input', updateStats);
+
+// Add event listener for Enter key to save changes
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && editOverlay.style.display === 'flex') {
+        saveBtn.click();
+    }
 });
 
 saveBtn.addEventListener('click', () => {
@@ -157,11 +166,18 @@ saveBtn.addEventListener('click', () => {
     document.getElementById('Modcb').value = document.getElementById('editWoundsMod').value;
     document.querySelector('#cb-body .cb-grupe:nth-child(2) #cb-name').value = document.getElementById('editStaminaName').value;
     document.getElementById('Modcb1').value = document.getElementById('editStaminaMod').value;
+    const customMoveSpeed = document.getElementById('editCustomMove').value;
+    if (customMoveSpeed) {
+        localStorage.setItem('customMoveSpeed', customMoveSpeed);
+    } else {
+        localStorage.removeItem('customMoveSpeed');
+    }
     updateStats();
     editOverlay.style.display = 'none';
 });
 
-const stats = ['ws', 'bs', 'str', 'tn', 'dex', 'per','int', 'wp', 'fel'];
+const stats = ['ws', 'bs', 'str', 'tn', 'dex', 'per', 'int', 'wp', 'fel'];
+
 function updateStats() {
     const cbContainer = document.getElementById('cb-container');
     const cbContainer1 = document.getElementById('cb-container1');
@@ -181,12 +197,12 @@ function updateStats() {
         if (totol > 15) {
             totol = 15;
         }
-        total.textContent = totol;  
+        total.textContent = totol;
         if (stat === 'dex') {
             dexTotal = totol;
         }
     });
-    const selectedSize = document.getElementById('ChRaceSize').value; 
+    const selectedSize = document.getElementById('ChRaceSize').value;
     let baseMove = 0;
     switch (selectedSize) {
         case 'Small':
@@ -201,8 +217,16 @@ function updateStats() {
         default:
             baseMove = 5;
     }
+    // Calculate move speed: base move + (Dex total // 5)
     const dexBonusMove = Math.floor(dexTotal / 5);
     let totalMoveSpeed = baseMove + dexBonusMove;
+
+    const customMoveSpeed = localStorage.getItem('customMoveSpeed');
+    const parsedCustomMoveSpeed = parseFloat(customMoveSpeed);
+    if (!isNaN(parsedCustomMoveSpeed)) {
+        totalMoveSpeed += parsedCustomMoveSpeed;
+    }
+
     document.getElementById('moveSpeedDisplay').value = totalMoveSpeed;
     // Also display move speed in the 'Other' section under Actions
     var moveSpeedOtherBox = document.getElementById('moveSpeedDisplayOtherBox');
@@ -222,10 +246,10 @@ function updateStats() {
         cbwrapper.style.display = 'inline-block';
         const cb = document.createElement('input');
         cb.type = 'checkbox';
-        cb.id = 'cb'+ labelNum;
+        cb.id = 'cb' + labelNum;
         cbwrapper.appendChild(cb);
         const label = document.createElement('label');
-        label.htmlFor = 'cb'+ labelNum;
+        label.htmlFor = 'cb' + labelNum;
         label.textContent = labelNum;
         cbwrapper.appendChild(label);
         label.style.position = 'absolute';
@@ -244,10 +268,10 @@ function updateStats() {
         cbwrapper.style.display = 'inline-block';
         const cb = document.createElement('input');
         cb.type = 'checkbox';
-        cb.id = 'cb'+ labelNum;
+        cb.id = 'cb' + labelNum;
         cbwrapper.appendChild(cb);
         const label = document.createElement('label');
-        label.htmlFor = 'cb'+ labelNum;
+        label.htmlFor = 'cb' + labelNum;
         label.textContent = labelNum;
         cbwrapper.appendChild(label);
         label.style.position = 'absolute';
@@ -264,36 +288,27 @@ const inventoryTab = document.getElementById('inventoryTab');
 const actions = document.getElementById('Actions');
 const traits = document.getElementById('Traits');
 const inventory = document.getElementById('Inventory');
-const updateActionsTab = () => {
-    actions.style.display = 'block';
-    traits.style.display = 'none';
-    inventory.style.display = 'none';
-    actionsTab.style.backgroundColor = 'var(--accent)';
-    traitsTab.style.backgroundColor = 'var(--main-color)';
-    inventoryTab.style.backgroundColor = 'var(--main-color)';
-}
-const updateTraitsTab = () => {
-    actions.style.display = 'none';
-    traits.style.display = 'block';
-    inventory.style.display = 'none';
-    actionsTab.style.backgroundColor = 'var(--main-color)';
-    traitsTab.style.backgroundColor = 'var(--accent)';
-    inventoryTab.style.backgroundColor = 'var(--main-color)';
-}
-const updateInventoryTab = () => {
-    actions.style.display = 'none';
-    traits.style.display = 'none';
-    inventory.style.display = 'block';
-    actionsTab.style.backgroundColor = 'var(--main-color)';
-    traitsTab.style.backgroundColor = 'var(--main-color)';
-    inventoryTab.style.backgroundColor = 'var(--accent)';
-}
-actionsTab.addEventListener('click', updateActionsTab);
-traitsTab.addEventListener('click', updateTraitsTab);
-inventoryTab.addEventListener('click', updateInventoryTab);
-updateActionsTab();
-const addtbbtn = ['addtbbtn1', 'addtbbtn2', 'addtbbtn3', 'addtbbtn4', 'addtbbtn5', 'addtbbtn6', 'addtbbtn7','addtbbtn8'];
-const TBContainer = ['TBContainer1', 'TBContainer2', 'TBContainer3', 'TBContainer4', 'TBContainer5', 'TBContainer6', 'TBContainer7','TBContainer8'];
+
+const updateTabs = (activeTab) => {
+    actions.classList.remove('active');
+    traits.classList.remove('active');
+    inventory.classList.remove('active');
+    actionsTab.classList.remove('active');
+    traitsTab.classList.remove('active');
+    inventoryTab.classList.remove('active');
+
+    document.getElementById(activeTab).classList.add('active');
+    document.getElementById(`${activeTab.toLowerCase()}Tab`).classList.add('active');
+};
+
+actionsTab.addEventListener('click', () => updateTabs('Actions'));
+traitsTab.addEventListener('click', () => updateTabs('Traits'));
+inventoryTab.addEventListener('click', () => updateTabs('Inventory'));
+
+updateTabs('Actions'); // Set initial active tab
+
+const addtbbtn = ['addtbbtn1', 'addtbbtn2', 'addtbbtn3', 'addtbbtn4', 'addtbbtn5', 'addtbbtn6', 'addtbbtn7', 'addtbbtn8'];
+const TBContainer = ['TBContainer1', 'TBContainer2', 'TBContainer3', 'TBContainer4', 'TBContainer5', 'TBContainer6', 'TBContainer7', 'TBContainer8'];
 addtbbtn.forEach((btnId, i) => {
     document.getElementById(btnId).onclick = () => {
         const ta = document.createElement('textarea');
@@ -314,6 +329,7 @@ const addbox = document.getElementById('acbb');
 const removeBox = document.getElementById('removeCbb');
 const boxContainer = document.getElementById('cb-body');
 let boxCounter = 2;
+
 function createCheckboxes(container, modValue, boxId) {
     container.innerHTML = '';
     const numCheckboxes = parseInt(modValue) || 1;
@@ -328,23 +344,25 @@ function createCheckboxes(container, modValue, boxId) {
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.id = `cb-${boxId}-${labelNum}`;
-        cb.style.width = '24px';
-        cb.style.height = '24px';
-        cb.style.margin = '5px';
-        cb.style.borderRadius = '3px';
-        cb.style.border = '1px solid var(--accent)';
-        cb.style.backgroundColor = 'var(--main-color)';
+        cb.style.width = '25px';
+        cb.style.height = '25px';
+        cb.style.margin = '0';
+        cb.style.borderRadius = '4px';
+        cb.style.border = '1px solid var(--accent-color)';
+        cb.style.backgroundColor = 'var(--background)';
         cb.style.appearance = 'none';
         cbwrapper.appendChild(cb);
         const label = document.createElement('label');
         label.htmlFor = `cb-${boxId}-${labelNum}`;
         label.textContent = labelNum;
         label.style.position = 'absolute';
-        label.style.right = '8px';
-        label.style.top = '8px';
+        label.style.right = 'auto';
+        label.style.left = '50%';
+        label.style.top = '50%';
+        label.style.transform = 'translate(-50%, -50%)';
         label.style.pointerEvents = 'none';
-        label.style.color = 'var(--text)';
-        label.style.fontSize = '12px';
+        label.style.color = 'var(--text-color)';
+        label.style.fontSize = '0.8em';
         cbwrapper.appendChild(label);
     }
 }
@@ -354,9 +372,10 @@ if (addbox) {
         box.className = 'cb-grupe';
         boxContainer.appendChild(box);
         box.style.display = 'grid';
-        box.style.gridTemplateColumns = '1fr 1fr';
+        box.style.gridTemplateColumns = '1fr auto';
         box.style.alignItems = 'center';
-        box.style.margin = '5px';
+        box.style.margin = '0 0 10px 0';
+        box.style.gap = '10px';
         const text = document.createElement('input');
         text.type = 'text';
         text.id = `cb-name-${boxCounter}`;
@@ -364,13 +383,14 @@ if (addbox) {
         text.value = 'New Box';
         text.style.gridRow = '1';
         text.style.gridColumn = '1';
-        text.style.margin = '5px';
-        text.style.fontSize = 'x-large';
-        text.style.width = '260px';
-        text.style.border = '1px solid var(--accent)';
-        text.style.borderRadius = '3px';
-        text.style.backgroundColor = 'var(--main-color)';
-        text.style.color = 'var(--text)';
+        text.style.margin = '0';
+        text.style.fontSize = '1.2em';
+        text.style.width = 'auto';
+        text.style.border = 'none';
+        text.style.borderRadius = '0';
+        text.style.backgroundColor = 'transparent';
+        text.style.color = 'var(--text-color)';
+        text.style.padding = '5px';
         box.appendChild(text);
         const mod = document.createElement('input');
         mod.id = `modcb-${boxCounter}`;
@@ -379,17 +399,24 @@ if (addbox) {
         mod.className = 'Modcb';
         mod.style.gridRow = '1';
         mod.style.gridColumn = '2';
-        mod.style.margin = '5px';
-        mod.style.width = '26px';
-        mod.style.height = '28px';
+        mod.style.margin = '0';
+        mod.style.width = '40px';
+        mod.style.height = 'auto';
         mod.style.textAlign = 'center';
+        mod.style.padding = '5px';
+        mod.style.border = '1px solid var(--border-color)';
+        mod.style.borderRadius = '5px';
+        mod.style.backgroundColor = 'var(--main-color)';
+        mod.style.color = 'var(--text-color)';
         box.appendChild(mod);
         const cbCont = document.createElement('div');
         cbCont.className = 'cbcontainer';
         cbCont.id = `cb-container-${boxCounter}`;
         cbCont.style.gridRow = '2';
         cbCont.style.gridColumn = '1/3';
-        cbCont.style.padding = '5px';
+        cbCont.style.padding = '10px 0 0 0';
+        cbCont.style.borderTop = '1px solid var(--border-color)';
+        cbCont.style.marginTop = '10px';
         box.appendChild(cbCont);
         const currentBoxId = boxCounter;
         const updateCheckboxes = () => {
