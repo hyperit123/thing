@@ -518,6 +518,7 @@ renownInput.addEventListener('input', () => {
         default:
             cashAmount = 0;
     }
+    
     document.getElementById('creditInput').value = cashAmount;
     localStorage.setItem('credit', cashAmount);
 
