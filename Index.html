@@ -21,10 +21,11 @@
     <div class="main-content">
         <div id="left-cont">
             <div id="stats">
-                <span class="title">Stats and Coin</span>
-                <input type="hidden" id="moveSpeedDisplay" value="5" readonly style="width: 24px;">
-
-                <div class="text-cont">
+                <div id="statsTitle">
+                    <span class="title">Stats and Coin</span>
+                    <input type="hidden" id="moveSpeedDisplay" value="5" readonly style="width: 24px;">
+                </div>
+                <div class="text-cont" id=" ">
                     <div class="custom-container" id="ws">
                         <input type="text" hidden="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -33,6 +34,8 @@
                         <strong class="Total" id="wsTotal" style="font-size: xx-large; width: 40px;">0</strong>
                         <span>Weapon Skill (WS):</span>
                     </div>
+                </div>
+                <div class="text-cont" id="bsCont">
                     <div class="custom-container" id="bs">
                         <input hidden type="text" placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -41,10 +44,8 @@
                         <strong class="Total" id="bsTotal" style="font-size: xx-large; width: 40px;">0</strong>
                         <span>Ballistic Skill (BS):</span>
                     </div>
-                    <span class="Money"> Credits: </span>
-                    <input class="cash" maxlength="7" />
                 </div>
-                <div class="text-cont">
+                <div class="text-cont" id="strCont">
                     <div class="custom-container" id="str">
                         <input hidden type="text" placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -53,6 +54,8 @@
                         <strong class="Total" style="font-size: xx-large; width: 40px;" id="strTotal">0</strong>
                         <span>Strength (Str):</span>
                     </div>
+                </div>
+                <div class="text-cont" id="tnCont">
                     <div class="custom-container" id="tn">
                         <input hidden type="text" placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -61,10 +64,8 @@
                         <strong class="Total" style="font-size: xx-large; width: 40px;" id="tnTotal">0</strong>
                         <span>Toughness (Tn):</span>
                     </div>
-                    <span class="Money"> Dosh: </span>
-                    <input class="cash" maxlength="7" />
                 </div>
-                <div class="text-cont">
+                <div class="text-cont" id="dexCont">
                     <div class="custom-container" id="dex">
                         <input hidden type="text" placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -73,6 +74,8 @@
                         <strong class="Total" id="dexTotal" style="font-size: xx-large; width: 40px;">0</strong>
                         <span>Dexterity (Dex):</span>
                     </div>
+                </div>
+                <div class="text-cont" id="intCont">
                     <div class="custom-container" id="int">
                         <input hidden type="text" placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -81,10 +84,9 @@
                         <strong class="Total" id="intTotal" style="font-size: xx-large; width: 40px;">0</strong>
                         <span>Intelligence (INT):</span>
                     </div>
-                    <span class="Money"> Fancy Credits: </span>
-                    <input class="cash" maxlength="7" />
+                    
                 </div>
-                <div class="text-cont">
+                <div class="text-cont" id="perCont">
                     <div class="custom-container" id="per">
                         <input type="text" hidden placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -93,6 +95,8 @@
                         <strong class="Total" id="perTotal" style="font-size: xx-large; width: 40px;">0</strong>
                         <span>Perception (PER):</span>
                     </div>
+                </div>
+                <div class="text-cont" id="wpCont">
                     <div class="custom-container" id="wp">
                         <input hidden type="text" placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -102,7 +106,7 @@
                         <span>Willpower (WP):</span>
                     </div>
                 </div>
-                <div class="text-cont">
+                <div class="text-cont" id="felCont">
                     <div class="custom-container" id="fel">
                         <input hidden type="text" placeholder="3" maxlength="2" id="str1" disabled>
                         <div hidden class="custom-separator">+</div>
@@ -112,18 +116,30 @@
                         <span>Fellowship (FEL):</span>
                     </div>
                 </div>
+                <div class="text-cont" id="creditLabel">
+                    <span class="Money"> Credits: </span>
+                    <input id="creditInput" class="cash" maxlength="7" />
+                </div>
+                <div class="text-cont">
+                    <span class="Money" id="doshLabel"> Dosh: </span>
+                    <input id="doshInput" class="cash" maxlength="7" />
+                </div>
+                <div class="text-cont" id="fancyLabel">
+                    <span class="Money">Renown:</span>
+                    <input id="renownInput" class="cash" maxlength="7" />
+                </div>
             </div>
             <div id="cb-body">
                 <div class="cb-grupe">
                     <input type="text" id="cb-name" value="Max Wounds" disabled>
-                    <input id="Modcb" maxlength="2" value="3" class="Modcb" disabled>
+                    <input id="Modcb" maxlength="2" value="2" class="Modcb" disabled>
                     <div id="cb-container">
                         <input type="checkbox" id="cb">
                     </div>
                 </div>
                 <div class="cb-grupe">
                     <input type="text" id="cb-name" value="Stamina" disabled>
-                    <input id="Modcb1" maxlength="2" value="4" class="Modcb" disabled>
+                    <input id="Modcb1" maxlength="2" value="3" class="Modcb" disabled>
                     <div id="cb-container1">
                         <input type="checkbox" id="cb">
                     </div>
@@ -144,19 +160,21 @@
                 <div class="sections">
                     <h3>Actions</h3>
                     <div id="TBContainer1">
+                        <span class="organic"> Recover (Recover 1 stamina + Blank Check of 3 dice)</span>
                     </div>
                     <button id="addtbbtn1" class="addtbbtn">Add Text Box</button>
                 </div>
                 <div class="sections">
                     <h3>Bonus Actions</h3>
                     <div id="TBContainer2">
+                        <span class="organic"> Breathe (Recover 1 stamina)</span>
+                        <span class="mech">Overclock (Must be done before a full action) Select a full action to do and double its stamina cost in return for doubling numbers rolled (Snake Eyes not included)</span>
+                        <span style="display:block;margin-bottom:8px;">Dash speed: <span id="moveSpeedDisplayOtherBox2" class="Total"style="margin-left:8px;padding:3px 5px;"></span></span>
                     </div>
                     <button id="addtbbtn2" class="addtbbtn">Add Text Box</r </button> </div> <div class="sections">
                         <h3>Other</h3>
                         <div id="TBContainer3">
-                            <span style="display:block;margin-bottom:8px;">Move Speed: <span
-                                    id="moveSpeedDisplayOtherBox" class="Total"
-                                    style="margin-left:8px;padding:3px 5px;"></span></span>
+                            <span style="display:block;margin-bottom:8px;">Move Speed: <span id="moveSpeedDisplayOtherBox" class="Total" style="margin-left:8px;padding:3px 5px;"></span></span>
                         </div>
                         <button id="addtbbtn3" class="addtbbtn">Add Text Box</button>
                 </div>
@@ -211,11 +229,11 @@
                 </div>
                 <div class="edit-row">
                     <label>Character Name:</label>
-                    <input type="text" id="editChName" placeholder="Character Name">
+                    <input type="text" id="editChName" maxlength="44" placeholder="Character Name">
                 </div>
                 <div class="edit-row">
                     <label>Gender, Class, Race:</label>
-                    <input type="text" id="editChGCR" placeholder="Gender, Class, Race">
+                    <input type="text" id="editChGCR" maxlength="44" placeholder="Gender, Class, Race">
                 </div>
                 <div class="edit-row">
                     <label>Level:</label>
@@ -230,6 +248,23 @@
                     </select>
                     <input type="text" id="editCustomMove" placeholder="Custom Move"
                         style="margin-left: 3px; width: 10px; ">
+                </div>
+                <div class="edit-row">
+                    <label>Organic:</label>
+                    <div id="organicOptions">
+                        <button id="organicYes" class="addtbbtn">Yes</button>
+                        <button id="organicNo" class="addtbbtn">No</button>
+                    </div>
+                </div>
+                <div class="edit-row">
+                    <label>Status:</label>
+                    <select id="editStatus">
+                        <option value="Wealthy">Wealthy</option>
+                        <option value="Middle">Middle Class</option>
+                        <option value="Poor">Poor</option>
+                        <option value="Destitute">Destitute</option>
+                    </select>
+
                 </div>
             </div>
 
@@ -379,5 +414,8 @@
 
     <script src="script.js"></script>
 </body>
+<footer>
+    <p>Created by Hyper and Bird ©. 2025</p>
+</footer>
 
 </html>

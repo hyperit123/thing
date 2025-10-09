@@ -229,10 +229,15 @@ function updateStats() {
 
     document.getElementById('moveSpeedDisplay').value = totalMoveSpeed;
     // Also display move speed in the 'Other' section under Actions
-    var moveSpeedOtherBox = document.getElementById('moveSpeedDisplayOtherBox');
+    let moveSpeedOtherBox = document.getElementById('moveSpeedDisplayOtherBox');
     if (moveSpeedOtherBox) {
         moveSpeedOtherBox.textContent = totalMoveSpeed;
     }
+    let moveSpeedOtherBox2 = document.getElementById('moveSpeedDisplayOtherBox2');
+    if (moveSpeedOtherBox2) {
+        moveSpeedOtherBox2.textContent = totalMoveSpeed * 2;
+    }
+
     let mod = Modcb.value || 3;
     let mod1 = Modcb1.value || 4;
     let cbcont = document.querySelector(`#tnTotal`).textContent * mod;
@@ -437,3 +442,83 @@ if (removeBox) {
         }
     });
 }
+
+const organicYes = document.getElementById('organicYes');
+const organicNo = document.getElementById('organicNo');
+let organic = localStorage.getItem('organic') === 'true';
+const organicElements = document.querySelectorAll('.organic');
+const mechElements = document.querySelectorAll('.mech');
+
+function updateOrganicButtons() {
+    organicYes.classList.toggle('active', organic);
+    organicNo.classList.toggle('active', !organic);
+}
+updateOrganicButtons();
+if (organicYes && organicNo) {
+    organicYes.addEventListener('click', () => {
+        organic = true;
+        localStorage.setItem('organic', 'true');
+        updateOrganicButtons();
+        organicElements.forEach(el => el.style.display = 'block');
+        mechElements.forEach(el => el.style.display = 'none');
+    });
+    organicNo.addEventListener('click', () => {
+        organic = false;
+        localStorage.setItem('organic', 'false');
+        updateOrganicButtons();
+        organicElements.forEach(el => el.style.display = 'none');
+        mechElements.forEach(el => el.style.display = 'block');
+    });
+}
+if (organic) {
+    organicElements.forEach(el => el.style.display = 'block');
+    mechElements.forEach(el => el.style.display = 'none');
+}
+else {
+    organicElements.forEach(el => el.style.display = 'none');
+    mechElements.forEach(el => el.style.display = 'block');
+}
+
+// Initialize currency inputs
+const creditInput = document.getElementById('creditInput');
+const doshInput = document.getElementById('doshInput');
+const renownInput = document.getElementById('renownInput');
+
+// Load saved currency values from localStorage
+creditInput.value = localStorage.getItem('credit') || '';
+doshInput.value = localStorage.getItem('dosh') || '';
+renownInput.value = localStorage.getItem('renown') || '';
+
+// Save currency values to localStorage on input change
+creditInput.addEventListener('input', () => {
+    localStorage.setItem('credit', creditInput.value);
+});
+doshInput.addEventListener('input', () => {
+    localStorage.setItem('dosh', doshInput.value);
+});
+renownInput.addEventListener('input', () => {
+    localStorage.setItem('renown', renownInput.value);
+});
+
+    const selectedStatus = document.getElementById('editStatus').value;
+    let cashAmount = 0;
+    switch (selectedStatus) {
+        case 'Wealthy':
+            cashAmount = 1000;
+            break;
+        case 'Middle':
+            cashAmount = 500;
+            break;
+        case 'Poor':
+            cashAmount = 50;
+            break;
+        case 'Destitute':
+            cashAmount = 0;
+            break;
+        default:
+            cashAmount = 0;
+    }
+    document.getElementById('creditInput').value = cashAmount;
+    localStorage.setItem('credit', cashAmount);
+
+// End of script.js
