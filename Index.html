@@ -243,13 +243,13 @@
         }
         .cb-grupe #cb-name:disabled {
             background-color: var(--main-color);
-            color: var(--text);
+            color: var,--text);
             opacity: 0.8;
             pointer-events: none;
         }
         .Modcb:disabled {
             background-color: var(--main-color);
-            color: var(--text);
+            color: var,--text);
             opacity: 0.8;
             pointer-events: none;
         }
@@ -333,7 +333,7 @@
             font-size: medium;
             border: 1px solid var(--accent);
             background-color: var(--main-color);
-            color: var(--text); 
+            color: var(--text);
             text-align: center;
             height: 28px;
             width: 26px;
@@ -353,7 +353,7 @@
             border-radius: 8px;
             border: 1px solid var(--accent);
             background-color: var(--main-color);
-            color: var(--text);
+            color: var,--text);
             font-size: 14px;
             text-align: center; 
         }
@@ -470,9 +470,10 @@
             border-radius: 12px 12px 24px 24px;
             background: #181018;
             color: var(--text);
-            padding: 8px 18px 0 18px;
+            padding: 10px 18px 10px 18px; /* Adjusted padding for better vertical spacing */
             margin-bottom: 18px;
-            min-width: 110px;
+            width: 190px;
+            height: auto; /* Allow height to adjust based on content */
             box-shadow: 0 2px 8px #0008;
             position: relative;
         }
@@ -481,7 +482,7 @@
             font-weight: bold;
             letter-spacing: 1px;
             color: #fff;
-            margin-bottom: 2px;
+            margin-bottom: 5px; /* Increased margin for label */
             text-align: center;
         }
         .stat-inputs {
@@ -489,7 +490,8 @@
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            margin-bottom: 2px;
+            margin-top: 10px; /* Added top margin to separate from total */
+            margin-bottom: 10px; /* Adjusted bottom margin */
         }
         .stat-modifier {
             font-size: 2em;
@@ -531,7 +533,7 @@
         }
 
         .stat-inputs input {
-            width: 30px;
+            width: 40px; /* Increased input width for better appearance */
             text-align: center;
             border: none;
             background-color: transparent;
@@ -539,8 +541,8 @@
         }
 
         .point-btn {
-            width: 30px;
-            height: 30px;
+            width: 35px; /* Slightly increased button width */
+            height: 35px; /* Slightly increased button height */
             border: 1px solid var(--accent);
             background-color: var(--main-color);
             color: var(--text);
@@ -802,101 +804,101 @@
                 <div class="edit-stats">
                     <div class="stat-edit">
                         <label>Weapon Skill (WS):</label>
+                        <span id="ws-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="ws" data-action="minus">-</button>
                             <input type="text" id="edit-ws-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="ws" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-ws-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="ws-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Ballistic Skill (BS):</label>
+                        <span id="bs-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="bs" data-action="minus">-</button>
                             <input type="text" id="edit-bs-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="bs" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-bs-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="bs-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Strength (Str):</label>
+                        <span id="str-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="str" data-action="minus">-</button>
                             <input type="text" id="edit-str-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="str" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-str-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="str-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Toughness (Tn):</label>
+                        <span id="tn-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="tn" data-action="minus">-</button>
                             <input type="text" id="edit-tn-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="tn" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-tn-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="tn-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Dexterity (Dex):</label>
+                        <span id="dex-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="dex" data-action="minus">-</button>
                             <input type="text" id="edit-dex-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="dex" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-dex-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="dex-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Intelligence (INT):</label>
+                        <span id="int-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="int" data-action="minus">-</button>
                             <input type="text" id="edit-int-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="int" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-int-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="int-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Perception (PER):</label>
+                        <span id="per-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="per" data-action="minus">-</button>
                             <input type="text" id="edit-per-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="per" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-per-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="per-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Willpower (WP):</label>
+                        <span id="wp-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="wp" data-action="minus">-</button>
                             <input type="text" id="edit-wp-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="wp" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-wp-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="wp-total">1</span></span>
                         </div>
                     </div>
                     <div class="stat-edit">
                         <label>Fellowship (FEL):</label>
+                        <span id="fel-total" style="font-size: 40px;">1</span>
                         <div class="stat-inputs">
                             <button class="point-btn" data-stat="fel" data-action="minus">-</button>
                             <input type="text" id="edit-fel-base" maxlength="1" value="1" readonly style="width: 40px;">
                             <button class="point-btn" data-stat="fel" data-action="plus">+</button>
                             <span style="margin: 0 10px;">+</span>
                             <input type="text" id="edit-fel-bonus" maxlength="2" placeholder="0" style="width: 40px;">
-                            <span style="margin-left: 5px; color: var(--accent);">= <span id="fel-total">1</span></span>
                         </div>
                     </div>
                 </div>
