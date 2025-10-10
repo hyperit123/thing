@@ -276,7 +276,7 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:checked {
-    background-color: var(--checked-color);
+    background-color: var(--accent-color);
     border-color: var(--checked-color);
 }
 
