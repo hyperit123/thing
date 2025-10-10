@@ -349,13 +349,6 @@ function createCheckboxes(container, modValue, boxId) {
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.id = `cb-${boxId}-${labelNum}`;
-        cb.style.width = '25px';
-        cb.style.height = '25px';
-        cb.style.margin = '0';
-        cb.style.borderRadius = '4px';
-        cb.style.border = '1px solid var(--accent-color)';
-        cb.style.backgroundColor = 'var(--background)';
-        cb.style.appearance = 'none';
         cbwrapper.appendChild(cb);
         const label = document.createElement('label');
         label.htmlFor = `cb-${boxId}-${labelNum}`;
@@ -367,7 +360,7 @@ function createCheckboxes(container, modValue, boxId) {
         label.style.transform = 'translate(-50%, -50%)';
         label.style.pointerEvents = 'none';
         label.style.color = 'var(--text-color)';
-        label.style.fontSize = '0.8em';
+        label.style.fontSize = '24px';
         cbwrapper.appendChild(label);
     }
 }
