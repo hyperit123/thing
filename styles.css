@@ -9,7 +9,7 @@
 
 body {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     background-color: var(--background);
     color: var(--text-color);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,21 +18,24 @@ body {
     min-height: 100vh;
     box-sizing: border-box;
 }
+
 header {
     grid-row: 1;
     grid-column: 1/span 2;
     display: grid;
     grid-template-columns: 0.04fr 0.41fr 0.05fr;
+    grid-template-rows: 0.2fr 0.2fr;
     align-items: center;
     gap: 3px;
     padding: 15px 20px;
     background-color: var(--main-color);
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
+    height: 75px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-footer{
+footer {
     grid-row: 3;
     grid-column: 1/span 2;
 }
@@ -49,7 +52,7 @@ footer{
 #editBtn {
     grid-row: 2;
     grid-column: 3;
-    padding: 8px 15px;
+    padding: 8px 1px;
     background-color: var(--checked-color);
     color: var(--text-color);
     border: none;
@@ -65,7 +68,7 @@ footer{
 
 input[type="text"],
 select {
-    padding: 8px 12px;
+    padding: 8px 1px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     background-color: var(--background);
@@ -111,39 +114,92 @@ select:disabled {
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 #left-cont {
     grid-row: 2;
     grid-column: 1;
+    width: 560px;
 }
+
 #right-cont {
     grid-row: 2;
     grid-column: 2;
     width: 1000px;
 }
-#stats{
+
+#stats {
     display: grid;
     grid-template-columns: 0.3fr 0.7fr 0.001fr;
     grid-template-rows: 0.3fr, repeat(8, auto);
     gap: 15px;
     margin-top: 10px;
 }
-#statsTitle{
+
+#statsTitle {
     grid-column: 1 / -1;
     text-align: center;
     margin-bottom: 10px;
 }
-#wsCont{ grid-row: 2; grid-column: 1; }
-#bsCont{ grid-row: 2; grid-column: 2; }
-#tnCont{ grid-row: 3; grid-column: 1; }
-#strCont{ grid-row: 3; grid-column: 2; }
-#dexCont{ grid-row: 4; grid-column: 1; }
-#intCont{ grid-row: 4; grid-column: 2; }
-#perCont{ grid-row: 5; grid-column: 1; }
-#wpCont{ grid-row: 5; grid-column: 2; }
-#felCont{ grid-row: 6; grid-column: 1; }
-#creditLabel{ grid-row: 2; grid-column: 3; }
-#doshLabel{ grid-row: 3; grid-column: 3; }
-#fancyLabel{ grid-row: 4; grid-column: 3; }
+
+#wsCont {
+    grid-row: 2;
+    grid-column: 1;
+}
+
+#bsCont {
+    grid-row: 2;
+    grid-column: 2;
+}
+
+#tnCont {
+    grid-row: 3;
+    grid-column: 1;
+}
+
+#strCont {
+    grid-row: 3;
+    grid-column: 2;
+}
+
+#dexCont {
+    grid-row: 4;
+    grid-column: 1;
+}
+
+#intCont {
+    grid-row: 4;
+    grid-column: 2;
+}
+
+#perCont {
+    grid-row: 5;
+    grid-column: 1;
+}
+
+#wpCont {
+    grid-row: 5;
+    grid-column: 2;
+}
+
+#felCont {
+    grid-row: 6;
+    grid-column: 1;
+}
+
+#creditLabel {
+    grid-row: 2;
+    grid-column: 3;
+}
+
+#doshLabel {
+    grid-row: 3;
+    grid-column: 3;
+}
+
+#fancyLabel {
+    grid-row: 4;
+    grid-column: 3;
+}
 
 .title {
     font-size: 1.8em;
@@ -177,7 +233,15 @@ select:disabled {
     border-radius: 8px;
 }
 
-.custom-container input[type="text"] {
+.custom-container strong {
+    grid-row: 1/span 3;
+    font-size: 1.5em;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.custom-container span {
+    grid-row: 2;
     width: 10px;
     text-align: center;
     border: none;
@@ -204,6 +268,75 @@ select:disabled {
 
 .Money {
     color: var(--text-color);
+}
+
+/* ---------------------------------------------------------------------------
+   Money fields (Credits / Dosh / Renown)
+   - Reduce vertical spacing when stacked in the stats column.
+   - Make label width smaller for these specific fields so inputs sit closer.
+   - Improve input hit area and add accessible focus styles for keyboard users.
+   These changes only target the three money containers (ids below) so other
+   `.text-cont` usages remain unchanged.
+   --------------------------------------------------------------------------- */
+#creditLabel,
+#doshLabel,
+#fancyLabel {
+    /* slightly tighter stacking than the default .text-cont */
+    margin-bottom: 6px;
+    gap: 6px;
+    /* works with flex to reduce space between label and input */
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#creditLabel .Money,
+#doshLabel .Money,
+#fancyLabel .Money {
+    /* reduce the label reserved width so the input moves closer */
+    min-width: 60px;
+    font-weight: 600;
+}
+
+/* allow the fancy label to size naturally instead of forcing 10px width */
+#fancyLabel {
+    width: auto;
+}
+
+/* Improve the numeric/currency input appearance and accessibility */
+.cash {
+    width: 88px;
+    /* slightly larger touch/click target */
+    text-align: right;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--background);
+    color: var(--text-color);
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    /* keeps numbers monospaced for alignment */
+    transition: box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.cash::placeholder {
+    color: rgba(178, 213, 209, 0.55);
+}
+
+.cash:focus,
+.cash:focus-visible {
+    outline: none;
+    /* keep a clean look */
+    box-shadow: 0 0 0 3px rgba(106, 115, 184, 0.12);
+    border-color: var(--accent-color);
+}
+
+/* Small helper: when these money fields appear in very tight layouts, allow
+   the label to wrap but keep the input aligned. This keeps the UI resilient
+   at narrower widths. */
+#creditLabel .Money,
+#doshLabel .Money,
+#fancyLabel .Money {
+    white-space: nowrap;
 }
 
 .cash {
@@ -383,12 +516,16 @@ input[type="checkbox"]+label {
     font-size: 1.4em;
 }
 
-#organicYes.active, #organicNo.active {
+#organicYes.active,
+#organicNo.active {
     background-color: var(--accent-color);
 }
-.organic,.mech {
+
+.organic,
+.mech {
     display: none;
 }
+
 .mach {
     display: none;
 }
@@ -499,6 +636,7 @@ input[type="checkbox"]+label {
     margin-bottom: 15px;
     font-size: 1.5em;
 }
+
 #editChName {
     min-width: 100px;
     font-size: 16px;
@@ -673,4 +811,3 @@ input[type="checkbox"]+label {
 .info-box p {
     margin: 5px 0;
 }
-
