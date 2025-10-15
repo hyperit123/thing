@@ -22,11 +22,6 @@ const saveBtn = document.getElementById('saveBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const pfpInput = document.getElementById('pfpInput');
 
-// Initially hide the overlay
-window.onload = function () {
-    editOverlay.style.display = 'flex';
-};
-
 // Show overlay
 editBtn.addEventListener('click', () => {
     loadCurrentValues();
@@ -243,8 +238,8 @@ function updateStats() {
         moveSpeedOtherBox2.textContent = totalMoveSpeed * 2;
     }
 
-    let mod = Modcb.value || 2;
-    let mod1 = Modcb1.value || 1;
+    let mod = Modcb.value || 3;
+    let mod1 = Modcb1.value || 4;
     let cbcont = document.querySelector(`#tnTotal`).textContent * mod;
     cbContainer.innerHTML = '';
     for (let i = 0; i < cbcont; i++) {

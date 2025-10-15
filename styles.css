@@ -1,4 +1,12 @@
+/*
+ * styles.css
+ * Theme variables and layout for the character sheet app.
+ * Major sections are separated with comments: variables, base layout,
+ * header, main content, components, overlay, and utilities.
+ */
+
 :root {
+    /* Color and theme variables (single source of truth) */
     --background: #08001f;
     --main-color: #444d84;
     --text-color: #b2d5d1;
@@ -811,3 +819,5 @@ input[type="checkbox"]+label {
 .info-box p {
     margin: 5px 0;
 }
+
+/* End of styles.css */
