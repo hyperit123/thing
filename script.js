@@ -22,6 +22,11 @@ const saveBtn = document.getElementById('saveBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const pfpInput = document.getElementById('pfpInput');
 
+// Initially hide the overlay
+window.onload = function () {
+    editOverlay.style.display = 'flex';
+};
+
 // Show overlay
 editBtn.addEventListener('click', () => {
     loadCurrentValues();
@@ -238,8 +243,8 @@ function updateStats() {
         moveSpeedOtherBox2.textContent = totalMoveSpeed * 2;
     }
 
-    let mod = Modcb.value || 3;
-    let mod1 = Modcb1.value || 4;
+    let mod = Modcb.value || 2;
+    let mod1 = Modcb1.value || 1;
     let cbcont = document.querySelector(`#tnTotal`).textContent * mod;
     cbContainer.innerHTML = '';
     for (let i = 0; i < cbcont; i++) {
@@ -466,8 +471,7 @@ if (organicYes && organicNo) {
 if (organic) {
     organicElements.forEach(el => el.style.display = 'block');
     mechElements.forEach(el => el.style.display = 'none');
-}
-else {
+} else {
     organicElements.forEach(el => el.style.display = 'none');
     mechElements.forEach(el => el.style.display = 'block');
 }
@@ -493,26 +497,26 @@ renownInput.addEventListener('input', () => {
     localStorage.setItem('renown', renownInput.value);
 });
 
-    const selectedStatus = document.getElementById('editStatus').value;
-    let cashAmount = 0;
-    switch (selectedStatus) {
-        case 'Wealthy':
-            cashAmount = 1000;
-            break;
-        case 'Middle':
-            cashAmount = 500;
-            break;
-        case 'Poor':
-            cashAmount = 50;
-            break;
-        case 'Destitute':
-            cashAmount = 0;
-            break;
-        default:
-            cashAmount = 0;
-    }
-    
-    document.getElementById('creditInput').value = cashAmount;
-    localStorage.setItem('credit', cashAmount);
+const selectedStatus = document.getElementById('editStatus').value;
+let cashAmount = 0;
+switch (selectedStatus) {
+    case 'Wealthy':
+        cashAmount = 1000;
+        break;
+    case 'Middle':
+        cashAmount = 500;
+        break;
+    case 'Poor':
+        cashAmount = 50;
+        break;
+    case 'Destitute':
+        cashAmount = 0;
+        break;
+    default:
+        cashAmount = 0;
+}
+
+document.getElementById('creditInput').value = cashAmount;
+localStorage.setItem('credit', cashAmount);
 
 // End of script.js
