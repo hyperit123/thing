@@ -524,107 +524,162 @@ function getCookie(name) {
     const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
     return match ? decodeURIComponent(match.pop()) : '';
 }
-
-// Load saved level on page load (after dropdowns are populated)
-window.addEventListener('DOMContentLoaded', () => {
-    const savedLevel = getCookie('level');
-    if (savedLevel) {
-        if (levelDropdown) levelDropdown.value = savedLevel;
-        if (editLevelDropdown) editLevelDropdown.value = savedLevel;
-        // If you use updatePointsRemaining() to refresh UI when level changes:
-        if (typeof updatePointsRemaining === 'function') updatePointsRemaining();
-    }
-});
-
-// --- Save level to cookie whenever either dropdown changes ---
-if (levelDropdown) {
-    levelDropdown.addEventListener('change', (e) => {
-        setCookie('level', e.target.value);
-    });
-}
-if (editLevelDropdown) {
-    editLevelDropdown.addEventListener('change', (e) => {
-        setCookie('level', e.target.value);
-        if (typeof updatePointsRemaining === 'function') updatePointsRemaining();
-    });
+function removeCookie(name) {
+    document.cookie = name + '=; Max-Age=0; path=/';
 }
 
-// Cookie utility functions
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
-}
+function saveAllToCookie() {
+    try {
+        const data = {
+            chname: document.getElementById('ChName')?.value || document.getElementById('editChName')?.value || '',
+            chgcr: document.getElementById('ChGCR')?.value || document.getElementById('editChGCR')?.value || '',
+            level: (document.getElementById('levelDropdown')?.value) || (document.getElementById('editLevelDropdown')?.value) || '',
+            credit: document.getElementById('creditInput')?.value || '',
+            dosh: document.getElementById('doshInput')?.value || '',
+            renown: document.getElementById('renownInput')?.value || ''
+        };
 
-function getCookie(name) {
-    const cname = name + "=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i].trim();
-        if (c.indexOf(cname) === 0) {
-            return c.substring(cname.length, c.length);
-        }
-    }
-    return "";
-}
-
-// Save input changes using cookies on change event
-window.addEventListener('load', function() {
-    // Select all inputs, selects, and textareas with an id attribute
-    const elements = document.querySelectorAll('input[id], select[id], textarea[id]');
-    elements.forEach(function(el) {
-        const savedValue = getCookie(el.id);
-        if (savedValue !== "") {
-            if (el.type === 'checkbox') {
-                el.checked = savedValue === 'true';
-            } else {
-                el.value = savedValue;
-            }
-        }
-        // Listen for changes and save to cookie
-        el.addEventListener('change', function() {
-            if (el.type === 'checkbox') {
-                setCookie(el.id, el.checked, 7);
-            } else {
-                setCookie(el.id, el.value, 7);
-            }
+        // gather stat bonuses (inputs following pattern edit-<stat>-bonus)
+        const statBonusEls = document.querySelectorAll('input[id^="edit-"][id$="-bonus"]');
+        statBonusEls.forEach(el => {
+            data[el.id] = el.value;
         });
-    });
-});
 
-// Restrict number inputs to digits only (integers). Adjust regex if you need decimals/negatives.
-document.querySelectorAll('input[type="number"]').forEach(input => {
-    input.setAttribute('inputmode', 'numeric');
-    input.setAttribute('pattern', '\\d*');
+        // also save simple checkbox/name fields if present
+        const woundsName = document.getElementById('editWoundsName');
+        const woundsMod = document.getElementById('editWoundsMod');
+        const stamName = document.getElementById('editStaminaName');
+        const stamMod = document.getElementById('editStaminaMod');
+        if (woundsName) data.editWoundsName = woundsName.value;
+        if (woundsMod) data.editWoundsMod = woundsMod.value;
+        if (stamName) data.editStaminaName = stamName.value;
+        if (stamMod) data.editStaminaMod = stamMod.value;
 
-    input.addEventListener('keydown', (e) => {
-        // allow navigation and editing keys
-        const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete','Home','End'];
-        if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
-        // only allow digits 0-9
-        if (!/^[0-9]$/.test(e.key)) e.preventDefault();
-    });
+        setCookie('thing_data', JSON.stringify(data));
+    } catch (e) {
+        console.error('Failed to save to cookie', e);
+    }
+}
 
-    input.addEventListener('paste', (e) => {
-        e.preventDefault();
-        const pasted = (e.clipboardData || window.clipboardData).getData('text');
-        const digits = pasted.replace(/[^\d]/g, '');
-        document.execCommand('insertText', false, digits);
-    });
-
-    input.addEventListener('input', () => {
-        const cleaned = input.value.replace(/[^\d]/g, '');
-        if (cleaned !== input.value) {
-            const pos = input.selectionStart || 0;
-            input.value = cleaned;
-            input.setSelectionRange(pos - 1, pos - 1);
+function loadAllFromCookie() {
+    try {
+        const raw = getCookie('thing_data');
+        if (!raw) {
+            // load pfp only if present in localStorage
+            const pfpData = localStorage.getItem('thing_pfp');
+            if (pfpData) {
+                const pfp = document.getElementById('pfp');
+                const editPfp = document.getElementById('editPfp');
+                if (pfp) pfp.src = pfpData;
+                if (editPfp) editPfp.src = pfpData;
+            }
+            return;
         }
-    });
-});
+        const data = JSON.parse(raw);
 
-// End of script.js
+        if (data.chname) {
+            const main = document.getElementById('ChName');
+            const edit = document.getElementById('editChName');
+            if (main) main.value = data.chname;
+            if (edit) edit.value = data.chname;
+        }
+        if (data.chgcr) {
+            const main = document.getElementById('ChGCR');
+            const edit = document.getElementById('editChGCR');
+            if (main) main.value = data.chgcr;
+            if (edit) edit.value = data.chgcr;
+        }
+        if (data.level) {
+            const l1 = document.getElementById('levelDropdown');
+            const l2 = document.getElementById('editLevelDropdown');
+            if (l1) l1.value = data.level;
+            if (l2) l2.value = data.level;
+            if (typeof updatePointsRemaining === 'function') updatePointsRemaining();
+        }
+        if (typeof updateStats === 'function') {
+            // restore stat bonus inputs first
+            const statBonusEls = document.querySelectorAll('input[id^="edit-"][id$="-bonus"]');
+            statBonusEls.forEach(el => {
+                if (data[el.id] !== undefined) el.value = data[el.id];
+            });
+            setTimeout(updateStats, 0);
+        }
+        if (data.credit && document.getElementById('creditInput')) document.getElementById('creditInput').value = data.credit;
+        if (data.dosh && document.getElementById('doshInput')) document.getElementById('doshInput').value = data.dosh;
+        if (data.renown && document.getElementById('renownInput')) document.getElementById('renownInput').value = data.renown;
+
+        if (data.editWoundsName && document.getElementById('editWoundsName')) document.getElementById('editWoundsName').value = data.editWoundsName;
+        if (data.editWoundsMod && document.getElementById('editWoundsMod')) document.getElementById('editWoundsMod').value = data.editWoundsMod;
+        if (data.editStaminaName && document.getElementById('editStaminaName')) document.getElementById('editStaminaName').value = data.editStaminaName;
+        if (data.editStaminaMod && document.getElementById('editStaminaMod')) document.getElementById('editStaminaMod').value = data.editStaminaMod;
+
+        // pfp from localStorage (safer for size)
+        const pfpData = localStorage.getItem('thing_pfp');
+        if (pfpData) {
+            const pfp = document.getElementById('pfp');
+            const editPfp = document.getElementById('editPfp');
+            if (pfp) pfp.src = pfpData;
+            if (editPfp) editPfp.src = pfpData;
+        }
+    } catch (e) {
+        console.error('Failed to load from cookie', e);
+    }
+}
+
+// hook up autosave on change/input for the relevant elements
+window.addEventListener('DOMContentLoaded', () => {
+    // load stored values first
+    loadAllFromCookie();
+
+    // save when edit fields change
+    const saveOnInput = [
+        '#editChName', '#editChGCR',
+        '#levelDropdown', '#editLevelDropdown',
+        '#creditInput', '#doshInput', '#renownInput',
+        '#editWoundsName', '#editWoundsMod', '#editStaminaName', '#editStaminaMod'
+    ].join(',');
+
+    document.querySelectorAll(saveOnInput).forEach(el => {
+        if (!el) return;
+        el.addEventListener('input', saveAllToCookie);
+        el.addEventListener('change', saveAllToCookie);
+    });
+
+    // stat bonus inputs
+    document.querySelectorAll('input[id^="edit-"][id$="-bonus"]').forEach(el => {
+        el.addEventListener('input', saveAllToCookie);
+        el.addEventListener('change', saveAllToCookie);
+    });
+
+    // Make sure clicking Save button also persists to cookie
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) saveBtn.addEventListener('click', saveAllToCookie);
+
+    // Profile picture: read file and persist to localStorage (cookies often too small)
+    const pfpInput = document.getElementById('pfpInput');
+    if (pfpInput) {
+        pfpInput.addEventListener('change', function (ev) {
+            const file = ev.target.files && ev.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const dataUrl = e.target.result;
+                    // set images
+                    const pfp = document.getElementById('pfp');
+                    const editPfp = document.getElementById('editPfp');
+                    if (pfp) pfp.src = dataUrl;
+                    if (editPfp) editPfp.src = dataUrl;
+                    // persist to localStorage (safer than cookie for images)
+                    localStorage.setItem('thing_pfp', dataUrl);
+                    // store a small flag in cookie so loadAllFromCookie knows there's a pfp
+                    setCookie('thing_pfp_saved', '1');
+                } catch (err) {
+                    console.error('Failed to save pfp', err);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+});
+// ...existing code...
