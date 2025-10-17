@@ -282,8 +282,7 @@ select {
 .Total {
     width: 30px;
     text-align: center;
-    border: 2px solid var(--border-color);
-    background-color: #4248746b;
+    background-color: #42487493;
     color: var(--text-color);
     border-radius: 5px;
     padding: 6px 0;
