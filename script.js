@@ -328,11 +328,11 @@ addtbbtn.forEach((btnId, i) => {
         xbt.onclick = () => {
             ta.remove();
             xbt.remove();
-            saveTextareasToStorage();
+            saveTextareasToCookie();
         };
         container.appendChild(xbt);
-    // persist immediately after adding
-    saveTextareasToStorage();
+        // persist immediately after adding
+        saveTextareasToCookie();
     };
 });
 
@@ -363,7 +363,7 @@ function restoreTextareas(data) {
             const xbt = document.createElement('button');
             xbt.textContent = 'X';
             xbt.className = 'xbtn';
-            xbt.onclick = () => { ta.remove(); xbt.remove(); saveTextareasToStorage(); };
+            xbt.onclick = () => { ta.remove(); xbt.remove(); saveTextareasToCookie(); };
             container.appendChild(xbt);
         });
     });
@@ -375,22 +375,22 @@ function restoreTextareas(data) {
             tas.forEach(ta => attachTextareaAutosave(ta, id));
         });
         // normalize/save after attaching
-        saveTextareasToStorage();
+        saveTextareasToCookie();
 }
 
-function saveTextareasToStorage() {
+function saveTextareasToCookie() {
     try {
         const payload = serializeTextareas();
-        // save in localStorage for larger capacity and reliability
-        localStorage.setItem('thing_textareas', JSON.stringify(payload));
+        // encode as JSON and save in cookie
+        setCookie('thing_textareas', JSON.stringify(payload));
     } catch (e) {
-        console.error('Failed to save textareas to storage', e);
+        console.error('Failed to save textareas', e);
     }
 }
 
 function attachTextareaAutosave(ta, containerId) {
     ta.addEventListener('input', debounce(() => {
-        saveTextareasToStorage();
+        saveTextareasToCookie();
     }, 300));
 }
 
@@ -600,7 +600,7 @@ function removeCookie(name) {
     document.cookie = name + '=; Max-Age=0; path=/';
 }
 
-function saveAllToStorage() {
+function saveAllToCookie() {
     try {
         const data = {
             chname: document.getElementById('ChName')?.value || document.getElementById('editChName')?.value || '',
@@ -608,9 +608,7 @@ function saveAllToStorage() {
             level: (document.getElementById('levelDropdown')?.value) || (document.getElementById('editLevelDropdown')?.value) || '',
             credit: document.getElementById('creditInput')?.value || '',
             dosh: document.getElementById('doshInput')?.value || '',
-            renown: document.getElementById('renownInput')?.value || '',
-            raceSize: document.getElementById('ChRaceSize')?.value || document.getElementById('editRaceSize')?.value || 'Medium',
-            customMoveSpeed: document.getElementById('editCustomMove')?.value || ''
+            renown: document.getElementById('renownInput')?.value || ''
         };
 
         // gather stat bases and bonuses (inputs following pattern edit-<stat>-base and edit-<stat>-bonus)
@@ -633,15 +631,15 @@ function saveAllToStorage() {
         if (stamName) data.editStaminaName = stamName.value;
         if (stamMod) data.editStaminaMod = stamMod.value;
 
-        localStorage.setItem('thing_data', JSON.stringify(data));
+        setCookie('thing_data', JSON.stringify(data));
     } catch (e) {
-        console.error('Failed to save to storage', e);
+        console.error('Failed to save to cookie', e);
     }
 }
 
-function loadAllFromStorage() {
+function loadAllFromCookie() {
     try {
-        const raw = localStorage.getItem('thing_data');
+        const raw = getCookie('thing_data');
         if (!raw) {
             // load pfp only if present in localStorage
             const pfpData = localStorage.getItem('thing_pfp');
@@ -711,7 +709,7 @@ function loadAllFromStorage() {
 // hook up autosave on change/input for the relevant elements
 window.addEventListener('DOMContentLoaded', () => {
     // load stored values first
-    loadAllFromStorage();
+    loadAllFromCookie();
 
     // save when edit fields change
     const saveOnInput = [
@@ -723,31 +721,31 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll(saveOnInput).forEach(el => {
         if (!el) return;
-        el.addEventListener('input', saveAllToStorage);
-        el.addEventListener('change', saveAllToStorage);
+        el.addEventListener('input', saveAllToCookie);
+        el.addEventListener('change', saveAllToCookie);
     });
 
     // stat bonus inputs
     document.querySelectorAll('input[id^="edit-"][id$="-bonus"]').forEach(el => {
-        el.addEventListener('input', saveAllToStorage);
-        el.addEventListener('change', saveAllToStorage);
+        el.addEventListener('input', saveAllToCookie);
+        el.addEventListener('change', saveAllToCookie);
     });
 
     // stat base inputs (point buy) - autosave as well
     document.querySelectorAll('input[id^="edit-"][id$="-base"]').forEach(el => {
         el.addEventListener('input', () => {
             updatePointsRemaining();
-            saveAllToStorage();
+            saveAllToCookie();
         });
         el.addEventListener('change', () => {
             updatePointsRemaining();
-            saveAllToStorage();
+            saveAllToCookie();
         });
     });
 
     // Make sure clicking Save button also persists to cookie
     const saveBtn = document.getElementById('saveBtn');
-    if (saveBtn) saveBtn.addEventListener('click', saveAllToStorage);
+    if (saveBtn) saveBtn.addEventListener('click', saveAllToCookie);
 
     // Profile picture: read file and persist to localStorage (cookies often too small)
     const pfpInput = document.getElementById('pfpInput');
@@ -772,31 +770,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     console.error('Failed to save pfp', err);
                 }
             };
+            // restore saved textareas (if any)
+            try {
+                const rawT = getCookie('thing_textareas');
+                if (rawT) {
+                    const parsed = JSON.parse(rawT);
+                    restoreTextareas(parsed);
+                }
+            } catch (e) {
+                console.error('Failed to restore textareas', e);
+            }
             reader.readAsDataURL(file);
         });
     }
-    // restore saved textareas (if any)
-    try {
-        let parsed = null;
-        try {
-            const raw = localStorage.getItem('thing_textareas');
-            if (raw) parsed = JSON.parse(raw);
-        } catch (e) {
-            console.error('Failed to parse textareas from localStorage', e);
-        }
-        if (parsed) restoreTextareas(parsed);
-    } catch (e) {
-        console.error('Failed to restore textareas', e);
-    }
-
-    // ensure any textareas present get autosave listeners and persist current state
-    TBContainer.forEach(id => {
-        const container = document.getElementById(id);
-        if (!container) return;
-        const tas = Array.from(container.querySelectorAll('textarea.ta'));
-        tas.forEach(ta => attachTextareaAutosave(ta, id));
-    });
-    // normalize/save after attaching
-    saveTextareasToStorage();
 });
 // ...existing code...
