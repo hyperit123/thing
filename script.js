@@ -514,4 +514,117 @@ switch (selectedStatus) {
 document.getElementById('creditInput').value = cashAmount;
 localStorage.setItem('credit', cashAmount);
 
+// --- Cookie helpers (add near top of file, after initial element refs) ---
+function setCookie(name, value, days = 365) {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
+}
+function getCookie(name) {
+    const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return match ? decodeURIComponent(match.pop()) : '';
+}
+
+// Load saved level on page load (after dropdowns are populated)
+window.addEventListener('DOMContentLoaded', () => {
+    const savedLevel = getCookie('level');
+    if (savedLevel) {
+        if (levelDropdown) levelDropdown.value = savedLevel;
+        if (editLevelDropdown) editLevelDropdown.value = savedLevel;
+        // If you use updatePointsRemaining() to refresh UI when level changes:
+        if (typeof updatePointsRemaining === 'function') updatePointsRemaining();
+    }
+});
+
+// --- Save level to cookie whenever either dropdown changes ---
+if (levelDropdown) {
+    levelDropdown.addEventListener('change', (e) => {
+        setCookie('level', e.target.value);
+    });
+}
+if (editLevelDropdown) {
+    editLevelDropdown.addEventListener('change', (e) => {
+        setCookie('level', e.target.value);
+        if (typeof updatePointsRemaining === 'function') updatePointsRemaining();
+    });
+}
+
+// Cookie utility functions
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+}
+
+function getCookie(name) {
+    const cname = name + "=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(cname) === 0) {
+            return c.substring(cname.length, c.length);
+        }
+    }
+    return "";
+}
+
+// Save input changes using cookies on change event
+window.addEventListener('load', function() {
+    // Select all inputs, selects, and textareas with an id attribute
+    const elements = document.querySelectorAll('input[id], select[id], textarea[id]');
+    elements.forEach(function(el) {
+        const savedValue = getCookie(el.id);
+        if (savedValue !== "") {
+            if (el.type === 'checkbox') {
+                el.checked = savedValue === 'true';
+            } else {
+                el.value = savedValue;
+            }
+        }
+        // Listen for changes and save to cookie
+        el.addEventListener('change', function() {
+            if (el.type === 'checkbox') {
+                setCookie(el.id, el.checked, 7);
+            } else {
+                setCookie(el.id, el.value, 7);
+            }
+        });
+    });
+});
+
+// Restrict number inputs to digits only (integers). Adjust regex if you need decimals/negatives.
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.setAttribute('inputmode', 'numeric');
+    input.setAttribute('pattern', '\\d*');
+
+    input.addEventListener('keydown', (e) => {
+        // allow navigation and editing keys
+        const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete','Home','End'];
+        if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
+        // only allow digits 0-9
+        if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+    });
+
+    input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData).getData('text');
+        const digits = pasted.replace(/[^\d]/g, '');
+        document.execCommand('insertText', false, digits);
+    });
+
+    input.addEventListener('input', () => {
+        const cleaned = input.value.replace(/[^\d]/g, '');
+        if (cleaned !== input.value) {
+            const pos = input.selectionStart || 0;
+            input.value = cleaned;
+            input.setSelectionRange(pos - 1, pos - 1);
+        }
+    });
+});
+
 // End of script.js
