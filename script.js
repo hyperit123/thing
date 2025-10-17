@@ -316,20 +316,99 @@ const addtbbtn = ['addtbbtn1', 'addtbbtn2', 'addtbbtn3', 'addtbbtn4', 'addtbbtn5
 const TBContainer = ['TBContainer1', 'TBContainer2', 'TBContainer3', 'TBContainer4', 'TBContainer5', 'TBContainer6', 'TBContainer7', 'TBContainer8'];
 addtbbtn.forEach((btnId, i) => {
     document.getElementById(btnId).onclick = () => {
+        const container = document.getElementById(TBContainer[i]);
         const ta = document.createElement('textarea');
         ta.className = 'ta';
-        ta.id = 'ta' + i;
-        document.getElementById(TBContainer[i]).appendChild(ta);
+        // no fixed id to allow multiple
+        attachTextareaAutosave(ta, TBContainer[i]);
+        container.appendChild(ta);
         const xbt = document.createElement('button');
         xbt.textContent = 'X';
         xbt.className = 'xbtn';
         xbt.onclick = () => {
             ta.remove();
             xbt.remove();
+            saveTextareasToCookie();
         };
-        document.getElementById(TBContainer[i]).appendChild(xbt);
+        container.appendChild(xbt);
+        // persist immediately after adding
+        saveTextareasToCookie();
     };
 });
+
+// --- Textarea persistence helpers ---
+function serializeTextareas() {
+    const result = {};
+    TBContainer.forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return;
+        const tas = Array.from(container.querySelectorAll('textarea.ta'));
+        // Keep trimmed, non-empty values only to reduce payload
+        const values = tas.map(ta => (ta.value || '').trim()).filter(v => v !== '');
+        if (values.length > 0) result[id] = values;
+    });
+    return result;
+}
+
+function restoreTextareas(data) {
+    TBContainer.forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return;
+        container.innerHTML = ''; // clear existing
+        const values = (data && data[id]) || [];
+        values.forEach((val, idx) => {
+            const ta = document.createElement('textarea');
+            ta.className = 'ta';
+            ta.value = val;
+            attachTextareaAutosave(ta, id);
+            container.appendChild(ta);
+            const xbt = document.createElement('button');
+            xbt.textContent = 'X';
+            xbt.className = 'xbtn';
+            xbt.onclick = () => { ta.remove(); xbt.remove(); saveTextareasToCookie(); };
+            container.appendChild(xbt);
+        });
+    });
+        // ensure any textareas present get autosave listeners and persist current state
+        TBContainer.forEach(id => {
+            const container = document.getElementById(id);
+            if (!container) return;
+            const tas = Array.from(container.querySelectorAll('textarea.ta'));
+            tas.forEach(ta => attachTextareaAutosave(ta, id));
+        });
+        // normalize/save after attaching
+        saveTextareasToCookie();
+}
+
+function saveTextareasToCookie() {
+    try {
+        const payload = serializeTextareas();
+        // encode as JSON and save in cookie
+        if (!payload || Object.keys(payload).length === 0) {
+            // nothing to save — remove cookie to avoid storing empty payloads
+            removeCookie('thing_textareas');
+            return;
+        }
+        setCookie('thing_textareas', JSON.stringify(payload));
+    } catch (e) {
+        console.error('Failed to save textareas', e);
+    }
+}
+
+function attachTextareaAutosave(ta, containerId) {
+    ta.addEventListener('input', debounce(() => {
+        saveTextareasToCookie();
+    }, 300));
+}
+
+// simple debounce helper
+function debounce(fn, ms) {
+    let t;
+    return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+    };
+}
 const addbox = document.getElementById('acbb');
 const removeBox = document.getElementById('removeCbb');
 const boxContainer = document.getElementById('cb-body');
@@ -539,7 +618,11 @@ function saveAllToCookie() {
             renown: document.getElementById('renownInput')?.value || ''
         };
 
-        // gather stat bonuses (inputs following pattern edit-<stat>-bonus)
+        // gather stat bases and bonuses (inputs following pattern edit-<stat>-base and edit-<stat>-bonus)
+        const statBaseEls = document.querySelectorAll('input[id^="edit-"][id$="-base"]');
+        statBaseEls.forEach(el => {
+            data[el.id] = el.value;
+        });
         const statBonusEls = document.querySelectorAll('input[id^="edit-"][id$="-bonus"]');
         statBonusEls.forEach(el => {
             data[el.id] = el.value;
@@ -597,7 +680,11 @@ function loadAllFromCookie() {
             if (typeof updatePointsRemaining === 'function') updatePointsRemaining();
         }
         if (typeof updateStats === 'function') {
-            // restore stat bonus inputs first
+            // restore stat base and bonus inputs first
+            const statBaseEls = document.querySelectorAll('input[id^="edit-"][id$="-base"]');
+            statBaseEls.forEach(el => {
+                if (data[el.id] !== undefined) el.value = data[el.id];
+            });
             const statBonusEls = document.querySelectorAll('input[id^="edit-"][id$="-bonus"]');
             statBonusEls.forEach(el => {
                 if (data[el.id] !== undefined) el.value = data[el.id];
@@ -651,6 +738,18 @@ window.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('change', saveAllToCookie);
     });
 
+    // stat base inputs (point buy) - autosave as well
+    document.querySelectorAll('input[id^="edit-"][id$="-base"]').forEach(el => {
+        el.addEventListener('input', () => {
+            updatePointsRemaining();
+            saveAllToCookie();
+        });
+        el.addEventListener('change', () => {
+            updatePointsRemaining();
+            saveAllToCookie();
+        });
+    });
+
     // Make sure clicking Save button also persists to cookie
     const saveBtn = document.getElementById('saveBtn');
     if (saveBtn) saveBtn.addEventListener('click', saveAllToCookie);
@@ -678,6 +777,16 @@ window.addEventListener('DOMContentLoaded', () => {
                     console.error('Failed to save pfp', err);
                 }
             };
+            // restore saved textareas (if any)
+            try {
+                const rawT = getCookie('thing_textareas');
+                if (rawT) {
+                    const parsed = JSON.parse(rawT);
+                    restoreTextareas(parsed);
+                }
+            } catch (e) {
+                console.error('Failed to restore textareas', e);
+            }
             reader.readAsDataURL(file);
         });
     }
