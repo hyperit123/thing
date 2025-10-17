@@ -343,9 +343,7 @@ function serializeTextareas() {
         const container = document.getElementById(id);
         if (!container) return;
         const tas = Array.from(container.querySelectorAll('textarea.ta'));
-        // Keep trimmed, non-empty values only to reduce payload
-        const values = tas.map(ta => (ta.value || '').trim()).filter(v => v !== '');
-        if (values.length > 0) result[id] = values;
+        result[id] = tas.map(ta => ta.value);
     });
     return result;
 }
@@ -384,11 +382,6 @@ function saveTextareasToCookie() {
     try {
         const payload = serializeTextareas();
         // encode as JSON and save in cookie
-        if (!payload || Object.keys(payload).length === 0) {
-            // nothing to save — remove cookie to avoid storing empty payloads
-            removeCookie('thing_textareas');
-            return;
-        }
         setCookie('thing_textareas', JSON.stringify(payload));
     } catch (e) {
         console.error('Failed to save textareas', e);
