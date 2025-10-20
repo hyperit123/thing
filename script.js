@@ -318,7 +318,7 @@ addtbbtn.forEach((btnId, i) => {
     document.getElementById(btnId).onclick = () => {
         const container = document.getElementById(TBContainer[i]);
         const ta = document.createElement('textarea');
-        ta.className = 'ta';
+        ta.className = 'ta textbox';
         // no fixed id to allow multiple
         attachTextareaAutosave(ta, TBContainer[i]);
         container.appendChild(ta);
@@ -328,11 +328,11 @@ addtbbtn.forEach((btnId, i) => {
         xbt.onclick = () => {
             ta.remove();
             xbt.remove();
-            saveTextareasToCookie();
+            saveTextareasToStorage();
         };
         container.appendChild(xbt);
         // persist immediately after adding
-        saveTextareasToCookie();
+        saveTextareasToStorage();
     };
 });
 
@@ -356,14 +356,14 @@ function restoreTextareas(data) {
         const values = (data && data[id]) || [];
         values.forEach((val, idx) => {
             const ta = document.createElement('textarea');
-            ta.className = 'ta';
+            ta.className = 'ta textbox';
             ta.value = val;
             attachTextareaAutosave(ta, id);
             container.appendChild(ta);
             const xbt = document.createElement('button');
             xbt.textContent = 'X';
             xbt.className = 'xbtn';
-            xbt.onclick = () => { ta.remove(); xbt.remove(); saveTextareasToCookie(); };
+            xbt.onclick = () => { ta.remove(); xbt.remove(); saveTextareasToStorage(); };
             container.appendChild(xbt);
         });
     });
@@ -375,23 +375,32 @@ function restoreTextareas(data) {
             tas.forEach(ta => attachTextareaAutosave(ta, id));
         });
         // normalize/save after attaching
-        saveTextareasToCookie();
+        saveTextareasToStorage();
 }
 
-function saveTextareasToCookie() {
+function saveTextareasToStorage() {
     try {
         const payload = serializeTextareas();
-        // encode as JSON and save in cookie
-        setCookie('thing_textareas', JSON.stringify(payload));
+        // save to localStorage instead of cookie for better storage
+        const data = JSON.stringify(payload);
+        localStorage.setItem('thing_textareas', data);
+        console.log('Saved textareas:', payload);
     } catch (e) {
         console.error('Failed to save textareas', e);
     }
 }
 
 function attachTextareaAutosave(ta, containerId) {
-    ta.addEventListener('input', debounce(() => {
-        saveTextareasToCookie();
-    }, 300));
+    // Add an input event listener with debouncing for typing
+    const debouncedSave = debounce(() => {
+        saveTextareasToStorage();
+    }, 300);
+    
+    ta.addEventListener('input', debouncedSave);
+    // Also save on blur to ensure changes are saved when leaving textarea
+    ta.addEventListener('blur', () => {
+        saveTextareasToStorage();
+    });
 }
 
 // simple debounce helper
@@ -772,9 +781,11 @@ window.addEventListener('DOMContentLoaded', () => {
             };
             // restore saved textareas (if any)
             try {
-                const rawT = getCookie('thing_textareas');
+                const rawT = localStorage.getItem('thing_textareas');
+                console.log('Loading textareas data:', rawT);
                 if (rawT) {
                     const parsed = JSON.parse(rawT);
+                    console.log('Parsed textarea data:', parsed);
                     restoreTextareas(parsed);
                 }
             } catch (e) {
@@ -784,4 +795,4 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-// ...existing code...
+// ...existing code...  
