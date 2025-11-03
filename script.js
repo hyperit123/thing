@@ -363,19 +363,23 @@ function restoreTextareas(data) {
             const xbt = document.createElement('button');
             xbt.textContent = 'X';
             xbt.className = 'xbtn';
-            xbt.onclick = () => { ta.remove(); xbt.remove(); saveTextareasToStorage(); };
+            xbt.onclick = () => {
+                ta.remove();
+                xbt.remove();
+                saveTextareasToStorage();
+            };
             container.appendChild(xbt);
         });
     });
-        // ensure any textareas present get autosave listeners and persist current state
-        TBContainer.forEach(id => {
-            const container = document.getElementById(id);
-            if (!container) return;
-            const tas = Array.from(container.querySelectorAll('textarea.ta'));
-            tas.forEach(ta => attachTextareaAutosave(ta, id));
-        });
-        // normalize/save after attaching
-        saveTextareasToStorage();
+    // ensure any textareas present get autosave listeners and persist current state
+    TBContainer.forEach(id => {
+        const container = document.getElementById(id);
+        if (!container) return;
+        const tas = Array.from(container.querySelectorAll('textarea.ta'));
+        tas.forEach(ta => attachTextareaAutosave(ta, id));
+    });
+    // normalize/save after attaching
+    saveTextareasToStorage();
 }
 
 function saveTextareasToStorage() {
@@ -395,7 +399,7 @@ function attachTextareaAutosave(ta, containerId) {
     const debouncedSave = debounce(() => {
         saveTextareasToStorage();
     }, 300);
-    
+
     ta.addEventListener('input', debouncedSave);
     // Also save on blur to ensure changes are saved when leaving textarea
     ta.addEventListener('blur', () => {
@@ -406,7 +410,7 @@ function attachTextareaAutosave(ta, containerId) {
 // simple debounce helper
 function debounce(fn, ms) {
     let t;
-    return function(...args) {
+    return function (...args) {
         clearTimeout(t);
         t = setTimeout(() => fn.apply(this, args), ms);
     };
@@ -601,10 +605,12 @@ function setCookie(name, value, days = 365) {
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
 }
+
 function getCookie(name) {
     const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
     return match ? decodeURIComponent(match.pop()) : '';
 }
+
 function removeCookie(name) {
     document.cookie = name + '=; Max-Age=0; path=/';
 }
@@ -612,12 +618,12 @@ function removeCookie(name) {
 function saveAllToCookie() {
     try {
         const data = {
-            chname: document.getElementById('ChName')?.value || document.getElementById('editChName')?.value || '',
-            chgcr: document.getElementById('ChGCR')?.value || document.getElementById('editChGCR')?.value || '',
-            level: (document.getElementById('levelDropdown')?.value) || (document.getElementById('editLevelDropdown')?.value) || '',
-            credit: document.getElementById('creditInput')?.value || '',
-            dosh: document.getElementById('doshInput')?.value || '',
-            renown: document.getElementById('renownInput')?.value || ''
+            chname: document.getElementById('ChName') ? .value || document.getElementById('editChName') ? .value || '',
+            chgcr: document.getElementById('ChGCR') ? .value || document.getElementById('editChGCR') ? .value || '',
+            level: (document.getElementById('levelDropdown') ? .value) || (document.getElementById('editLevelDropdown') ? .value) || '',
+            credit: document.getElementById('creditInput') ? .value || '',
+            dosh: document.getElementById('doshInput') ? .value || '',
+            renown: document.getElementById('renownInput') ? .value || ''
         };
 
         // gather stat bases and bonuses (inputs following pattern edit-<stat>-base and edit-<stat>-bonus)

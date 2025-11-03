@@ -12,16 +12,11 @@
 
     <Header>
         <img src="pfp.png" alt="pfp" id="pfp" style="image-rendering: pixelated;">
-        <div>
-            <input type="text" id="ChN" value="Character Name" disabled>
-            <div id="CHG-CHR-CHC">
-                <input type="text" id="ChG" value="female" disabled>
-                <input type="text" id="ChRaceSize" value="Medium" disabled>
-                <input type="text"id="ChC" value="class" disabled>   
-            </div>
-            <select id="levelDropdown" disabled></select>
-        </div>
-        <button id="editBtn"><img src="edit.png" alt="png" style="image-rendering: pixelated;" height="35px" width="35px"></button>
+        <button id="editBtn">Edit</button>
+        <input type="text" id="ChName" placeholder="Character Name" disabled>
+        <input type="text" id="ChGCR" placeholder="Gender, Class, Race" disabled>
+        <select id="levelDropdown" disabled></select>
+        <input type="hidden" id="ChRaceSize" value="Medium">
     </Header>
     <div class="main-content">
         <div id="left-cont">

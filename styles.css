@@ -3,65 +3,77 @@
  * Theme variables and layout for the character sheet app.
  * Major sections are separated with comments: variables, base layout,
  * header, main content, components, overlay, and utilities.
- */ 
+ */
+
 :root {
     /* Color and theme variables (single source of truth) */
     --background: #08001f;
     --main-color: #444d84;
-    --text-color: #c7e2df;
+    --text-color: #b2d5d1;
     --accent-color: #6a73b8;
     --border-color: #3a427a;
     --checked-color: #2c336b;
 }
+
+html,
 body {
-    display: flex;
-    flex-direction:column;
-    gap: 20px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    /* prevent body scroll */
+}
+
+body {
+    display: grid;
+    grid-template-rows: 1fr 1fr auto;
+    /* header, main, footer */
+    grid-template-columns: 1fr;
     background-color: var(--background);
     color: var(--text-color);
-    font-family: Arial, Helvetica, sans-serif;
-    margin: 0;
-    padding: 20px;
-    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
     box-sizing: border-box;
+    padding: 2vh 2vw;
+    /* responsive padding */
+    gap: 2vh;
+    /* space between header/main/footer */
 }
+
 header {
     grid-row: 1;
     grid-column: 1/span 2;
+    display: grid;
+    grid-template-columns: 0.04fr 0.41fr 0.05fr;
+    grid-template-rows: 0.2fr 0.2fr;
+    align-items: center;
+    gap: 3px;
+    padding: 15px 20px;
     background-color: var(--main-color);
-    border-radius: 8px;
-    margin: -0.4%;
-    padding: 0.4%;
-    display: flex;
-    flex-direction: row;
-    gap: 0.2%;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    height: 75px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 footer {
     grid-row: 3;
     grid-column: 1/span 2;
 }
-#CHG-CHR-CHC{
-    display: flex;
-    flex-direction: row;
-}
-#ChN{width: 99%; font-size: x-large;}
-#ChG{width: 9%;}
-#ChRaceSize{width: 20%;}
-#ChC{width: 15%;}
+
 #pfp {
+    grid-row: 1/span 2;
     width: 70px;
     height: 70px;
     border-radius: 50%;
     border: 2px solid var(--accent-color);
     object-fit: cover;
 }
-#ChG, #ChC, #ChRaceSize{
-    font-size: smaller;
-    font-family: Arial, Helvetica, sans-serif;
-    padding-left: 0.9%;
-}
 
 #editBtn {
+    grid-row: 2;
+    grid-column: 3;
+    padding: 8px 1px;
     background-color: var(--checked-color);
     color: var(--text-color);
     border: none;
@@ -69,43 +81,49 @@ footer {
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.2s ease;
-    height: 40px;
-    width: 40px;
 }
+
 #editBtn:hover {
     background-color: var(--accent-color);
 }
+
 input[type="text"],
 select {
+    padding: 8px 1px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     background-color: var(--background);
     color: var(--text-color);
     font-size: 1em;
 }
-#levelDropdown {
-    width: 70px;
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: smaller;
-    background-color: var(--background);
+
+input[type="text"]:disabled,
+select:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
-#levelDropdown {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: none;
-    background-repeat: no-repeat;
-    background-position: right center;
+
+#ChName,
+#ChGCR {
+    flex-grow: 1;
+    margin-left: 10px;
 }
-#levelDropdown::-ms-expand {
-    display: none;
-    border: 0;
+
+#ChName {
+    grid-row: 1;
+}
+
+#ChGCR {
+    grid-row: 2;
+}
+
+#Chname #levelDropdown {
+    width: 100px;
 }
 
 .main-content {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
     gap: 20px;
     flex-grow: 1;
 }
@@ -119,10 +137,14 @@ select {
 }
 
 #left-cont {
+    grid-row: 2;
+    grid-column: 1;
     width: 560px;
 }
 
 #right-cont {
+    grid-row: 2;
+    grid-column: 2;
     width: 1000px;
 }
 
@@ -135,7 +157,7 @@ select {
 }
 
 #statsTitle {
-    grid-column: 1/span 3;
+    grid-column: 1 / -1;
     text-align: center;
     margin-bottom: 10px;
 }
@@ -145,7 +167,7 @@ select {
     grid-column: 1;
 }
 
-#bsCont {
+§ #bsCont {
     grid-row: 2;
     grid-column: 2;
 }
@@ -257,7 +279,7 @@ select {
 .Total {
     width: 30px;
     text-align: center;
-    background-color: #42487493;
+    background-color: var(--main-color);
     color: var(--text-color);
     border-radius: 5px;
     padding: 6px 0;
@@ -267,8 +289,8 @@ select {
 
 .Money {
     color: var(--text-color);
-    
 }
+
 /* ---------------------------------------------------------------------------
    Money fields (Credits / Dosh / Renown)
    - Reduce vertical spacing when stacked in the stats column.
@@ -301,10 +323,6 @@ select {
     width: auto;
 }
 
-input[type="number"].cash {
-    appearance: textfield;
-}
-
 /* Improve the numeric/currency input appearance and accessibility */
 .cash {
     width: 88px;
@@ -315,7 +333,7 @@ input[type="number"].cash {
     border-radius: 6px;
     background-color: var(--background);
     color: var(--text-color);
-    font-size: 30px;
+    font-size: 16px;
     font-variant-numeric: tabular-nums;
     /* keeps numbers monospaced for alignment */
     transition: box-shadow 0.12s ease, border-color 0.12s ease;
